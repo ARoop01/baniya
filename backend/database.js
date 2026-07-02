@@ -130,7 +130,7 @@ export const initDatabase = async () => {
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
-        currency_preference VARCHAR(50) DEFAULT 'USD',
+        currency_preference VARCHAR(50) DEFAULT 'INR',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -230,7 +230,7 @@ export const initDatabase = async () => {
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password_hash TEXT NOT NULL,
-        currency_preference TEXT DEFAULT 'USD',
+        currency_preference TEXT DEFAULT 'INR',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -358,7 +358,7 @@ export const initDatabase = async () => {
     console.log('Seeding demo user...');
     await dbRun(
       'INSERT INTO users (name, email, password_hash, currency_preference) VALUES (?, ?, ?, ?)',
-      ['Demo User', demoEmail, '$2a$10$tX2yXIwCn1GD3qf0hK6kBOCp/KsQeZ1s/3IoNNvPahgFRfJEmqGOW', 'USD']
+      ['Demo User', demoEmail, '$2a$10$tX2yXIwCn1GD3qf0hK6kBOCp/KsQeZ1s/3IoNNvPahgFRfJEmqGOW', 'INR']
     );
   }
 

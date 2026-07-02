@@ -12,7 +12,7 @@ let trendChartInstance = null;
 let breakdownChartInstance = null;
 let reportChartInstance = null;
 let categoriesList = [];
-let baseCurrencySymbol = '$';
+let baseCurrencySymbol = '₹';
 
 // Currency map
 const CURRENCY_SYMBOLS = {
@@ -273,8 +273,8 @@ const refreshActiveView = () => {
 // ================= DATA FORMATTERS =================
 const formatMoney = (amount, currencyCode = null) => {
   const user = getCurrentUser();
-  const pref = currencyCode || (user ? user.currencyPreference : 'USD');
-  const symbol = CURRENCY_SYMBOLS[pref] || '$';
+  const pref = currencyCode || (user ? user.currencyPreference : 'INR');
+  const symbol = CURRENCY_SYMBOLS[pref] || '₹';
   return `${symbol}${parseFloat(amount).toFixed(2)}`;
 };
 
