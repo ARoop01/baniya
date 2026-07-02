@@ -1,0 +1,28 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+
+# SQLite Databases
+backend/*.db
+backend/*.db-journal
+*.db
+*.db-journal
+
+# Bundled JDK & Build environments
+jdk/
+.gradle/
+build/
+app/build/
+**/build/
+*.class
+
+# Android / Gradle configuration and IDE files
+.idea/
+*.iml
+local.properties
+.cxx/
+captures/
+.externalNativeBuild/
+.navigation/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuraFinance - Personal Expense Tracker</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dark-theme">
+  <!-- Offline Indicator -->
+  <div id="offline-bar" class="hidden">
+    <span class="offline-dot"></span> Offline Mode - Changes will sync when reconnected
+  </div>
+
+  <!-- Notification Banner -->
+  <div id="toast-container"></div>
+
+  <!-- App Wrapper -->
+  <div id="app">
+    <!-- ================= AUTH CONTAINER ================= -->
+    <div id="auth-container" class="auth-box hidden">
+      <div class="auth-card glass-panel">
+        <div class="auth-logo">
+          <div class="logo-icon">▲</div>
+          <span class="logo-text">Aura<span>Finance</span></span>
+        </div>
+        <h2 id="auth-title">Welcome Back</h2>
+        <p id="auth-subtitle" class="text-muted">Enter your credentials to access your finance dashboard</p>
+
+        <!-- Login Form -->
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email">Email Address</label>
+            <input type="email" id="login-email" required placeholder="you@example.com" value="demo@aurafinance.com">
+          </div>
+          <div class="form-group">
+            <div class="label-wrapper">
+              <label for="login-password">Password</label>
+              <a href="#" id="go-forgot" class="text-link">Forgot?</a>
+            </div>
+            <input type="password" id="login-password" required placeholder="••••••••" value="demopass123">
+          </div>
+          <div class="form-group checkbox-group" style="margin-top: -0.5rem; margin-bottom: 1.25rem;">
+            <label class="checkbox-container">
+              <input type="checkbox" id="show-login-password">
+              <span class="checkmark"></span>
+              Show Password
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+          <p class="auth-switch">Don't have an account? <a href="#" id="go-register" class="text-link">Create Account</a></p>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" class="hidden">
+          <div class="form-group">
+            <label for="register-name">Full Name</label>
+            <input type="text" id="register-name" required placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label for="register-email">Email Address</label>
+            <input type="email" id="register-email" required placeholder="you@example.com">
+          </div>
+          <div class="form-group">
+            <label for="register-password">Password</label>
+            <input type="password" id="register-password" required placeholder="Min 6 characters">
+          </div>
+          <div class="form-group checkbox-group" style="margin-top: -0.5rem; margin-bottom: 1.25rem;">
+            <label class="checkbox-container">
+              <input type="checkbox" id="show-register-password">
+              <span class="checkmark"></span>
+              Show Password
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="register-currency">Base Currency</label>
+            <select id="register-currency">
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="INR">INR (₹)</option>
+              <option value="JPY">JPY (¥)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+          <p class="auth-switch">Already have an account? <a href="#" id="go-login" class="text-link">Sign In</a></p>
+        </form>
+
+        <!-- Reset Password Form -->
+        <form id="reset-form" class="hidden">
+          <div class="form-group">
+            <label for="reset-email">Email Address</label>
+            <input type="email" id="reset-email" required placeholder="you@example.com">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
+          <p class="auth-switch">Remember password? <a href="#" id="go-login-reset" class="text-link">Back to Sign In</a></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- ================= MAIN CONTAINER ================= -->
+    <div id="main-container" class="hidden">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar glass-panel">
+        <div class="logo">
+          <div class="logo-icon">▲</div>
+          <span class="logo-text">Aura<span>Finance</span></span>
+        </div>
+        <nav class="nav-menu">
+          <a href="#" class="nav-item active" data-view="dashboard">
+            <span class="nav-icon">📊</span> Dashboard
+          </a>
+          <a href="#" class="nav-item" data-view="expenses">
+            <span class="nav-icon">💸</span> Expenses
+          </a>
+          <a href="#" class="nav-item" data-view="budgets">
+            <span class="nav-icon">🛡️</span> Budgets
+          </a>
+          <a href="#" class="nav-item" data-view="reports">
+            <span class="nav-icon">📈</span> Reports
+          </a>
+          <a href="#" class="nav-item" data-view="debts">
+            <span class="nav-icon">🤝</span> Lend & Borrow
+          </a>
+          <a href="#" class="nav-item" data-view="settings">
+            <span class="nav-icon">⚙️</span> Settings
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="user-badge">
+            <div class="user-avatar" id="user-avatar-initial">U</div>
+            <div class="user-info">
+              <div class="user-name" id="user-display-name">Username</div>
+              <div class="user-email text-muted" id="user-display-email">user@email.com</div>
+            </div>
+          </div>
+          <button id="logout-btn" class="btn btn-icon btn-logout" title="Log Out">🚪 Sign Out</button>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="content-area">
+        <!-- Top bar -->
+        <header class="topbar">
+          <h1 id="view-title" class="page-title">Dashboard</h1>
+          <div class="topbar-actions">
+            <button id="sync-now-btn" class="btn btn-secondary">🔄 Sync Now</button>
+            <button id="quick-add-btn" class="btn btn-primary">+ Add Expense</button>
+          </div>
+        </header>
+
+        <!-- View Panels -->
+        <div id="views">
+          <!-- 1. DASHBOARD VIEW -->
+          <div id="view-dashboard" class="view-panel">
+            <!-- Stat Cards Grid -->
+            <div class="stats-grid">
+              <div class="stat-card glass-panel">
+                <div class="stat-header">
+                  <span class="stat-title text-muted">This Month's Spending</span>
+                  <span class="stat-icon-wrap bg-primary-soft">💰</span>
+                </div>
+                <div class="stat-value" id="dash-spent">$0.00</div>
+                <div class="stat-comparison" id="dash-spent-diff">-- vs last month</div>
+              </div>
+              <div class="stat-card glass-panel">
+                <div class="stat-header">
+                  <span class="stat-title text-muted">Remaining Budget</span>
+                  <span class="stat-icon-wrap bg-success-soft">🛡️</span>
+                </div>
+                <div class="stat-value" id="dash-budget">$0.00</div>
+                <div class="stat-progress-bar">
+                  <div class="progress-fill" id="dash-budget-progress" style="width: 0%"></div>
+                </div>
+                <div class="stat-comparison" id="dash-budget-text">--% consumed</div>
+              </div>
+              <div class="stat-card glass-panel">
+                <div class="stat-header">
+                  <span class="stat-title text-muted">Top Spending Category</span>
+                  <span class="stat-icon-wrap bg-warning-soft">🔥</span>
+                </div>
+                <div class="stat-value" id="dash-top-cat">None</div>
+                <div class="stat-comparison" id="dash-top-cat-spent">$0.00 this month</div>
+              </div>
+            </div>
+
+            <!-- Dashboard Charts & Recent Activity -->
+            <div class="dashboard-grid">
+              <div class="chart-card glass-panel flex-2">
+                <h3>Spending Trend Over Time</h3>
+                <div class="chart-container">
+                  <canvas id="trendChart"></canvas>
+                </div>
+              </div>
+              <div class="chart-card glass-panel flex-1">
+                <h3>Category Breakdown</h3>
+                <div class="chart-container">
+                  <canvas id="breakdownChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dashboard Bottom Grid -->
+            <div class="dashboard-bottom-grid">
+              <!-- Recent Expenses -->
+              <div class="glass-panel flex-2">
+                <div class="panel-header">
+                  <h3>Recent Expenses</h3>
+                  <button class="btn btn-secondary btn-sm" id="dash-view-all-expenses">View All</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Method</th>
+                        <th>Notes</th>
+                        <th>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dash-recent-expenses-body">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              <!-- Insights & Tips -->
+              <div class="glass-panel flex-1">
+                <h3>Aura Insights</h3>
+                <div id="dashboard-insights" class="insights-list">
+                  <!-- Rendered dynamically -->
+                  <div class="insight-item">
+                    <span class="insight-icon">💡</span>
+                    <span class="insight-text">Add your expenses regularly to generate personalized AI finance insights.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. EXPENSES VIEW -->
+          <div id="view-expenses" class="view-panel hidden">
+            <!-- Filter & Search Controls -->
+            <div class="filter-panel glass-panel">
+              <div class="filter-row">
+                <div class="form-group search-group">
+                  <input type="text" id="expense-search" placeholder="Search by description/note...">
+                </div>
+                <div class="form-group select-group">
+                  <select id="expense-filter-category">
+                    <option value="">All Categories</option>
+                  </select>
+                </div>
+                <div class="form-group select-group">
+                  <select id="expense-filter-method">
+                    <option value="">All Payment Methods</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="filter-row flex-end">
+                <div class="form-group">
+                  <label>From</label>
+                  <input type="date" id="expense-filter-start">
+                </div>
+                <div class="form-group">
+                  <label>To</label>
+                  <input type="date" id="expense-filter-end">
+                </div>
+                <div class="form-group select-group">
+                  <label>Sort By</label>
+                  <select id="expense-sort">
+                    <option value="date-desc">Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="amount-desc">Amount: High to Low</option>
+                    <option value="amount-asc">Amount: Low to High</option>
+                    <option value="category-asc">Category Name</option>
+                  </select>
+                </div>
+                <button class="btn btn-secondary" id="clear-filters-btn">Reset</button>
+              </div>
+            </div>
+
+            <!-- Expense List Table -->
+            <div class="glass-panel">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Category</th>
+                      <th>Payment Method</th>
+                      <th>Notes / Description</th>
+                      <th>Receipt</th>
+                      <th>Amount</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="expense-list-body">
+                    <!-- Rendered dynamically -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="expense-list-empty" class="empty-state hidden">
+                <div class="empty-icon">📭</div>
+                <h4>No Expenses Found</h4>
+                <p class="text-muted">Try adjusting your filters or add a new expense.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. BUDGETS VIEW -->
+          <div id="view-budgets" class="view-panel hidden">
+            <!-- Add/Update Budgets Card -->
+            <div class="budget-setup-grid">
+              <div class="glass-panel">
+                <h3>Set Monthly Budgets</h3>
+                <p class="text-muted">Define your spending thresholds for current month.</p>
+                <form id="budget-form">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="budget-category">Budget Category</label>
+                      <a href="#" id="budget-new-category-btn" class="text-link" style="font-size: 0.85rem;">+ New Custom</a>
+                    </div>
+                    <select id="budget-category" required>
+                      <option value="OVERALL">Overall Monthly Budget</option>
+                      <!-- Rendered dynamically -->
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="budget-amount">Limit Amount</label>
+                    <input type="number" id="budget-amount" step="0.01" min="0" required placeholder="0.00">
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-block">Save Budget</button>
+                </form>
+              </div>
+
+              <!-- Budget Progress Cards -->
+              <div class="glass-panel flex-2">
+                <h3>Current Budget Status</h3>
+                <div id="budget-progress-list" class="budget-progress-container" style="margin-bottom: 1.5rem;">
+                  <!-- Rendered dynamically -->
+                </div>
+                
+                <h3 id="pending-debts-title" class="hidden" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Pending Repayments</h3>
+                <div id="budget-pending-repayments-list" class="budget-progress-container">
+                  <!-- Rendered dynamically -->
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. REPORTS VIEW -->
+          <div id="view-reports" class="view-panel hidden">
+            <!-- Report Controls -->
+            <div class="glass-panel filter-panel">
+              <div class="filter-row">
+                <div class="form-group">
+                  <label for="report-start">Start Date</label>
+                  <input type="date" id="report-start" required>
+                </div>
+                <div class="form-group">
+                  <label for="report-end">End Date</label>
+                  <input type="date" id="report-end" required>
+                </div>
+                <div class="form-group select-group">
+                  <label for="report-format">Export Format</label>
+                  <select id="report-format">
+                    <option value="csv">CSV Sheet</option>
+                    <option value="pdf">PDF Document</option>
+                  </select>
+                </div>
+                <div class="form-group align-end">
+                  <button class="btn btn-primary" id="generate-report-btn">Generate Report</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Report Summary -->
+            <div class="report-summary-grid">
+              <div class="glass-panel">
+                <h3>Custom Period Summary</h3>
+                <div class="report-stats">
+                  <div class="report-stat-item">
+                    <span class="text-muted">Total Expenses</span>
+                    <span class="report-stat-val text-primary" id="rep-total-spent">$0.00</span>
+                  </div>
+                  <div class="report-stat-item">
+                    <span class="text-muted">Number of Entries</span>
+                    <span class="report-stat-val" id="rep-entry-count">0</span>
+                  </div>
+                  <div class="report-stat-item">
+                    <span class="text-muted">Daily Average</span>
+                    <span class="report-stat-val" id="rep-daily-avg">$0.00</span>
+                  </div>
+                </div>
+              </div>
+              <div class="glass-panel flex-2">
+                <h3>Category Share</h3>
+                <div class="report-chart-container">
+                  <canvas id="reportCategoryChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. SETTINGS VIEW -->
+          <div id="view-settings" class="view-panel hidden">
+            <div class="settings-grid">
+              <!-- Profile Settings -->
+              <div class="glass-panel">
+                <h3>Profile Preferences</h3>
+                <form id="profile-form">
+                  <div class="form-group">
+                    <label for="profile-name">Name</label>
+                    <input type="text" id="profile-name" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="profile-currency">Preferred Currency</label>
+                    <select id="profile-currency">
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GBP">GBP (£)</option>
+                      <option value="INR">INR (₹)</option>
+                      <option value="JPY">JPY (¥)</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Save Profile</button>
+                </form>
+              </div>
+
+              <!-- Custom Category Management -->
+              <div class="glass-panel flex-2">
+                <div class="panel-header">
+                  <h3>Manage Categories</h3>
+                  <button class="btn btn-secondary btn-sm" id="add-cat-btn">+ Create Custom</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Category</th>
+                        <th>Color / Icon</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="settings-categories-body">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Appearance, System & Backup -->
+            <div class="settings-grid margin-top">
+              <div class="glass-panel">
+                <h3>App Settings</h3>
+                <div class="form-group switch-group">
+                  <label for="dark-mode-toggle">Dark Theme Mode</label>
+                  <label class="switch">
+                    <input type="checkbox" id="dark-mode-toggle" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="glass-panel flex-2">
+                <h3>Data & Storage Control</h3>
+                <div class="danger-zone-grid">
+                  <div>
+                    <p class="text-muted">Export all your transactions locally in backup format, or wipe out account.</p>
+                    <div class="btn-group">
+                      <button class="btn btn-secondary" id="backup-export-btn">📥 Backup Export (JSON)</button>
+                      <button class="btn btn-secondary" id="backup-import-btn">📤 Restore Import</button>
+                    </div>
+                  </div>
+                  <div class="danger-actions">
+                    <button class="btn btn-danger" id="delete-account-btn">⚠️ Delete Account</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. LEND & BORROW VIEW -->
+          <div id="view-debts" class="view-panel hidden">
+            <!-- Balances and Actions -->
+            <div class="stats-grid">
+              <div class="stat-card glass-panel">
+                <div class="stat-header">
+                  <span class="stat-title text-muted">Total Lent to Others</span>
+                  <span class="stat-icon-wrap bg-success-soft">🤝</span>
+                </div>
+                <div class="stat-value" id="debts-total-lent">$0.00</div>
+                <div class="stat-comparison">Money you are owed</div>
+              </div>
+              <div class="stat-card glass-panel">
+                <div class="stat-header">
+                  <span class="stat-title text-muted">Total Borrowed</span>
+                  <span class="stat-icon-wrap bg-warning-soft">💸</span>
+                </div>
+                <div class="stat-value" id="debts-total-borrowed">$0.00</div>
+                <div class="stat-comparison">Money you owe to others</div>
+              </div>
+            </div>
+
+            <!-- Filters & Recording -->
+            <div class="filter-panel glass-panel">
+              <div class="filter-row">
+                <div class="form-group select-group">
+                  <select id="debt-filter-type">
+                    <option value="">All Transactions</option>
+                    <option value="lent">Lent</option>
+                    <option value="borrowed">Borrowed</option>
+                  </select>
+                </div>
+                <div class="form-group select-group">
+                  <select id="debt-filter-status">
+                    <option value="active">Active Debts</option>
+                    <option value="settled">Settled History</option>
+                    <option value="">All History</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary" id="add-debt-btn" style="margin-left: auto;">+ Record Lend/Borrow</button>
+              </div>
+            </div>
+
+            <!-- Debt Cards / List -->
+            <div class="glass-panel" style="padding: 1.5rem;">
+              <h3 style="margin-bottom: 1.25rem;">Active Records</h3>
+              <div id="debt-list" class="debt-list-container">
+                <!-- Rendered dynamically -->
+              </div>
+              <div id="debt-list-empty" class="empty-state hidden">
+                <div class="empty-icon">🤝</div>
+                <h4>No Debt Records Found</h4>
+                <p class="text-muted">Track your outstanding lends and borrows here.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Add/Edit Expense Modal -->
+  <div id="expense-modal" class="modal hidden">
+    <div class="modal-content glass-panel">
+      <span class="close-modal">&times;</span>
+      <h3 id="expense-modal-title">Log Expense</h3>
+      <form id="expense-modal-form">
+        <input type="hidden" id="expense-id">
+        <input type="hidden" id="expense-recurring-id">
+        
+        <div class="form-group">
+          <label for="expense-amount">Amount</label>
+          <input type="number" id="expense-amount" step="0.01" min="0.01" required placeholder="0.00">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="expense-category">Category</label>
+            <select id="expense-category" required>
+              <!-- Rendered dynamically -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="expense-currency">Currency</label>
+            <select id="expense-currency">
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="INR">INR (₹)</option>
+              <option value="JPY">JPY (¥)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="expense-date">Date</label>
+            <input type="date" id="expense-date" required>
+          </div>
+          <div class="form-group">
+            <label for="expense-method">Payment Method</label>
+            <select id="expense-method" required>
+              <option value="Cash">Cash</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Debit Card">Debit Card</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="expense-notes">Notes / Description</label>
+          <input type="text" id="expense-notes" placeholder="e.g. Lunch with team">
+        </div>
+        <div class="form-group">
+          <label for="expense-receipt">Receipt Photo</label>
+          <input type="file" id="expense-receipt" accept="image/*">
+          <div id="receipt-preview-wrap" class="hidden">
+            <img id="receipt-preview" src="" alt="Receipt Preview">
+            <button type="button" class="btn btn-secondary btn-sm" id="remove-receipt-btn">Remove</button>
+          </div>
+        </div>
+        
+        <!-- Recurring Checkbox & Options -->
+        <div class="form-group checkbox-group">
+          <label class="checkbox-container">
+            <input type="checkbox" id="expense-is-recurring">
+            <span class="checkmark"></span>
+            Recurring Expense Series
+          </label>
+        </div>
+        <div id="recurring-options" class="form-group hidden">
+          <label for="expense-recurring-frequency">Frequency</label>
+          <select id="expense-recurring-frequency">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="expense-save-btn">Save Expense</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Custom Category Modal -->
+  <div id="category-modal" class="modal hidden">
+    <div class="modal-content glass-panel">
+      <span class="close-modal">&times;</span>
+      <h3 id="category-modal-title">Create Custom Category</h3>
+      <form id="category-modal-form">
+        <input type="hidden" id="category-id">
+        <div class="form-group">
+          <label for="category-name">Category Name</label>
+          <input type="text" id="category-name" required placeholder="e.g., Subscriptions">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category-icon">Icon Symbol</label>
+            <input type="text" id="category-icon" required placeholder="⚡" maxLength="2">
+          </div>
+          <div class="form-group">
+            <label for="category-color">Hex Color</label>
+            <input type="color" id="category-color" value="#a855f7">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save Category</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lend & Borrow Modal -->
+  <div id="debt-modal" class="modal hidden">
+    <div class="modal-content glass-panel">
+      <span class="close-modal">&times;</span>
+      <h3 id="debt-modal-title">Record Lend / Borrow</h3>
+      <form id="debt-modal-form">
+        <input type="hidden" id="debt-id">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="debt-person">Person's Name</label>
+            <input type="text" id="debt-person" required placeholder="e.g. John Doe">
+          </div>
+          <div class="form-group">
+            <label for="debt-type">Type</label>
+            <select id="debt-type" required>
+              <option value="lent">Lent (They owe me)</option>
+              <option value="borrowed">Borrowed (I owe them)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="debt-amount">Amount</label>
+            <input type="number" id="debt-amount" step="0.01" min="0.01" required placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label for="debt-repayment-type">Repayment Style</label>
+            <select id="debt-repayment-type" required>
+              <option value="lumpsum">Lumpsum (One-time)</option>
+              <option value="monthly">Monthly Installments</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="debt-monthly-terms-row" class="form-group hidden">
+          <label for="debt-months">Number of Months</label>
+          <input type="number" id="debt-months" min="1" max="120" value="1">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="debt-start-date">Start Date</label>
+            <input type="date" id="debt-start-date" required>
+          </div>
+          <div class="form-group">
+            <label for="debt-deadline-date">Deadline Date</label>
+            <input type="date" id="debt-deadline-date" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="debt-notes">Notes / Description</label>
+          <input type="text" id="debt-notes" placeholder="e.g. For house rent shared cost">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="debt-save-btn">Save Record</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Backup Restore Modal -->
+  <input type="file" id="backup-file-input" class="hidden" accept=".json">
+
+  <!-- JS App Core Scripts -->
+  <script type="module" src="app.js"></script>
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registered!'))
+          .catch(err => console.log('Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
