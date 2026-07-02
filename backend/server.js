@@ -131,7 +131,7 @@ const start = async () => {
     await initDatabase();
     
     app.listen(PORT, () => {
-      console.log(`AuraFinance Backend Server running on port ${PORT}`);
+      console.log(`Hisaab Backend Server running on port ${PORT}`);
       
       // Run once immediately on start
       checkRecurringExpenses();
