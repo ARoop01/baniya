@@ -337,7 +337,7 @@ const loadCategories = async () => {
 const loadDashboardView = async () => {
   await loadCategories();
   const user = getCurrentUser();
-  baseCurrencySymbol = CURRENCY_SYMBOLS[user ? user.currencyPreference : 'USD'] || '$';
+  baseCurrencySymbol = CURRENCY_SYMBOLS[user ? user.currencyPreference : 'INR'] || '₹';
 
   const expenses = (await getAllRecords('expenses')).filter(e => !e.is_deleted);
   const budgets = (await getAllRecords('budgets')).filter(b => !b.is_deleted);

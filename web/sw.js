@@ -1,5 +1,5 @@
 // AuraFinance Service Worker for Offline Availability
-const CACHE_NAME = 'hisaab-cache-v1';
+const CACHE_NAME = 'hisaab-cache-v2';
 const ASSETS = [
   '/',
   '/index.html',

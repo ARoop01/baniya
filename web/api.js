@@ -21,7 +21,12 @@ export const initAuth = async () => {
 };
 
 export const getAuthToken = () => authToken;
-export const getCurrentUser = () => currentUser;
+export const getCurrentUser = () => {
+  if (currentUser) {
+    currentUser.currencyPreference = 'INR';
+  }
+  return currentUser;
+};
 export const isOnline = () => navigator.onLine;
 
 // Authenticated fetch helper
