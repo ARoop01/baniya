@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error during registration' });
+    res.status(500).json({ error: `Server error during registration: ${err.message}` });
   }
 });
 
@@ -87,7 +87,7 @@ router.post('/login', async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error during login' });
+    res.status(500).json({ error: `Server error during login: ${err.message}` });
   }
 });
 
@@ -116,7 +116,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error fetching profile' });
+    res.status(500).json({ error: `Server error fetching profile: ${err.message}` });
   }
 });
 
@@ -153,7 +153,7 @@ router.put('/profile', authenticateToken, async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error updating profile' });
+    res.status(500).json({ error: `Server error updating profile: ${err.message}` });
   }
 });
 
@@ -165,7 +165,7 @@ router.delete('/profile', authenticateToken, async (req, res) => {
     res.json({ message: 'Account and all associated data deleted successfully' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error deleting account' });
+    res.status(500).json({ error: `Server error deleting account: ${err.message}` });
   }
 });
 
