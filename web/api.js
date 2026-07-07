@@ -3,7 +3,7 @@ import { getRecord, putRecord, getLocalChanges, applyServerChanges } from './db.
 
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:5000/api'
-  : 'https://baniya-backend.onrender.com/api'; // Replace with your Render URL if it differs
+  : '/api';
 
 // Cache in-memory auth state
 let authToken = null;

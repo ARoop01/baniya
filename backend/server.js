@@ -145,4 +145,11 @@ const start = async () => {
   }
 };
 
-start();
+if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+  // In serverless environments, initialize the database but let Vercel handle request listening
+  initDatabase().catch(err => console.error('Database initialization failed:', err));
+} else {
+  start();
+}
+
+export default app;
