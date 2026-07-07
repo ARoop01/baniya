@@ -1,4 +1,3 @@
-import sqlite3 from 'sqlite3';
 import pg from 'pg';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -23,16 +22,23 @@ if (isPostgres) {
       rejectUnauthorized: false // Required for Neon connection security
     }
   });
-} else {
-  // Connect to local SQLite Database
-  sqliteDb = new sqlite3.Database(DB_PATH, (err) => {
-    if (err) {
-      console.error('Error connecting to SQLite database:', err.message);
-    } else {
-      console.log('Connected to local SQLite database at:', DB_PATH);
-    }
-  });
 }
+
+// Dynamic SQLite loader to avoid loading native C++ bindings in serverless production on Vercel
+const getSqliteDb = async () => {
+  if (sqliteDb) return sqliteDb;
+  const sqlite3 = (await import('sqlite3')).default;
+  return new Promise((resolve, reject) => {
+    sqliteDb = new sqlite3.Database(DB_PATH, (err) => {
+      if (err) {
+        console.error('Error connecting to SQLite database:', err.message);
+        reject(err);
+      } else {
+        resolve(sqliteDb);
+      }
+    });
+  });
+};
 
 // SQL parameter converter: converts SQLite "?" placeholders to PostgreSQL "$1", "$2" sequentially
 const convertPlaceholders = (sql) => {
@@ -58,14 +64,19 @@ export const dbRun = (sql, params = []) => {
       }
     });
   } else {
-    return new Promise((resolve, reject) => {
-      sqliteDb.run(sql, params, function (err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ id: this.lastID, changes: this.changes });
-        }
-      });
+    return new Promise(async (resolve, reject) => {
+      try {
+        const db = await getSqliteDb();
+        db.run(sql, params, function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ id: this.lastID, changes: this.changes });
+          }
+        });
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 };
@@ -82,14 +93,19 @@ export const dbGet = (sql, params = []) => {
       }
     });
   } else {
-    return new Promise((resolve, reject) => {
-      sqliteDb.get(sql, params, (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
+    return new Promise(async (resolve, reject) => {
+      try {
+        const db = await getSqliteDb();
+        db.get(sql, params, (err, row) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(row);
+          }
+        });
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 };
@@ -106,14 +122,19 @@ export const dbAll = (sql, params = []) => {
       }
     });
   } else {
-    return new Promise((resolve, reject) => {
-      sqliteDb.all(sql, params, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
+    return new Promise(async (resolve, reject) => {
+      try {
+        const db = await getSqliteDb();
+        db.all(sql, params, (err, rows) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(rows);
+          }
+        });
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 };
@@ -222,6 +243,7 @@ export const initDatabase = async () => {
 
   } else {
     console.log('Initializing SQLite database tables...');
+    await getSqliteDb();
 
     // 1. Users Table
     await dbRun(`
