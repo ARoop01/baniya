@@ -620,7 +620,7 @@ fun AddEditExpenseScreen(
     var amount by remember { mutableStateOf("") }
     var categoryId by remember { mutableStateOf("") }
     var dateStr by remember { mutableStateOf(SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())) }
-    var paymentMethod by remember { mutableStateOf("Credit Card") }
+    var paymentMethod by remember { mutableStateOf("UPI") }
     var notes by remember { mutableStateOf("") }
     var receiptBase64 by remember { mutableStateOf<String?>(null) }
     var isRecurring by remember { mutableStateOf(false) }
@@ -743,7 +743,7 @@ fun AddEditExpenseScreen(
                 expanded = expandedMethod,
                 onDismissRequest = { expandedMethod = false }
             ) {
-                listOf("Cash", "Credit Card", "Debit Card", "Bank Transfer", "Other").forEach { method ->
+                listOf("Cash", "UPI", "Credit Card", "Debit Card", "Bank Transfer", "Other").forEach { method ->
                     DropdownMenuItem(
                         text = { Text(method) },
                         onClick = {

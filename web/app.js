@@ -532,7 +532,7 @@ const drawDashboardCharts = (currentMonthExpenses) => {
   if (breakLabels.length === 0) {
     breakLabels.push('No data');
     breakData.push(1);
-    breakColors.push('rgba(255,255,255,0.05)');
+    breakColors.push('var(--border-color)');
   }
 
   breakdownChartInstance = new Chart(breakdownCtx, {
@@ -621,7 +621,7 @@ const drawDashboardCharts = (currentMonthExpenses) => {
             ticks: { color: 'var(--text-muted)', font: { family: 'Inter', size: 10 } }
           },
           y: {
-            grid: { color: 'rgba(255,255,255,0.03)' },
+            grid: { color: 'var(--border-color)' },
             ticks: { color: 'var(--text-muted)', font: { family: 'Inter', size: 10 } }
           }
         }
@@ -946,7 +946,7 @@ const generateReportData = async () => {
   if (repLabels.length === 0) {
     repLabels.push('No data');
     repData.push(1);
-    repColors.push('rgba(255,255,255,0.05)');
+    repColors.push('var(--border-color)');
   }
 
   reportChartInstance = new Chart(reportCtx, {
@@ -1522,7 +1522,7 @@ const loadDebtsView = async () => {
            </div>`;
 
       const statusBadge = isSettled
-        ? `<span class="category-badge" style="background-color: rgba(255,255,255,0.05); color: var(--text-muted);">✓ Settled</span>`
+        ? `<span class="category-badge" style="background-color: var(--bg-input); color: var(--text-muted);">✓ Settled</span>`
         : `<span class="category-badge ${badgeClass}">${debt.type.toUpperCase()}</span>`;
         
       const actionButtons = isSettled

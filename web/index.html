@@ -38,14 +38,14 @@
         <form id="login-form">
           <div class="form-group">
             <label for="login-email">Email Address</label>
-            <input type="email" id="login-email" required placeholder="you@example.com" value="demo@hisaab.com">
+            <input type="email" id="login-email" required placeholder="you@example.com">
           </div>
           <div class="form-group">
             <div class="label-wrapper">
               <label for="login-password">Password</label>
               <a href="#" id="go-forgot" class="text-link">Forgot?</a>
             </div>
-            <input type="password" id="login-password" required placeholder="••••••••" value="demopass123">
+            <input type="password" id="login-password" required placeholder="••••••••">
           </div>
           <div class="form-group checkbox-group" style="margin-top: -0.5rem; margin-bottom: 1.25rem;">
             <label class="checkbox-container">
@@ -111,22 +111,22 @@
         </div>
         <nav class="nav-menu">
           <a href="#" class="nav-item active" data-view="dashboard">
-            <span class="nav-icon">📊</span> Dashboard
+            <span class="nav-icon">📊</span> <span class="nav-text">Dashboard</span>
           </a>
           <a href="#" class="nav-item" data-view="expenses">
-            <span class="nav-icon">💸</span> Expenses
+            <span class="nav-icon">💸</span> <span class="nav-text">Expenses</span>
           </a>
           <a href="#" class="nav-item" data-view="budgets">
-            <span class="nav-icon">🛡️</span> Budgets
+            <span class="nav-icon">🛡️</span> <span class="nav-text">Budgets</span>
           </a>
           <a href="#" class="nav-item" data-view="reports">
-            <span class="nav-icon">📈</span> Reports
+            <span class="nav-icon">📈</span> <span class="nav-text">Reports</span>
           </a>
           <a href="#" class="nav-item" data-view="debts">
-            <span class="nav-icon">🤝</span> Lend & Borrow
+            <span class="nav-icon">🤝</span> <span class="nav-text">Lend & Borrow</span>
           </a>
           <a href="#" class="nav-item" data-view="settings">
-            <span class="nav-icon">⚙️</span> Settings
+            <span class="nav-icon">⚙️</span> <span class="nav-text">Settings</span>
           </a>
         </nav>
         <div class="sidebar-footer">
@@ -260,6 +260,7 @@
                   <select id="expense-filter-method">
                     <option value="">All Payment Methods</option>
                     <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
                     <option value="Credit Card">Credit Card</option>
                     <option value="Debit Card">Debit Card</option>
                     <option value="Bank Transfer">Bank Transfer</option>
@@ -588,6 +589,7 @@
             <label for="expense-method">Payment Method</label>
             <select id="expense-method" required>
               <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
               <option value="Credit Card">Credit Card</option>
               <option value="Debit Card">Debit Card</option>
               <option value="Bank Transfer">Bank Transfer</option>
