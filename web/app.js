@@ -270,6 +270,15 @@ const refreshActiveView = () => {
   showView(activeView);
 };
 
+const resolveColor = (colorStr) => {
+  if (colorStr.startsWith('var(')) {
+    const varName = colorStr.slice(4, -1).trim();
+    const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    return val || (varName.includes('text') ? '#cbd5e1' : 'rgba(255,255,255,0.08)');
+  }
+  return colorStr;
+};
+
 // ================= DATA FORMATTERS =================
 const formatMoney = (amount, currencyCode = null) => {
   const user = getCurrentUser();
@@ -532,7 +541,7 @@ const drawDashboardCharts = (currentMonthExpenses) => {
   if (breakLabels.length === 0) {
     breakLabels.push('No data');
     breakData.push(1);
-    breakColors.push('var(--border-color)');
+    breakColors.push(resolveColor('var(--border-color)'));
   }
 
   breakdownChartInstance = new Chart(breakdownCtx, {
@@ -552,7 +561,7 @@ const drawDashboardCharts = (currentMonthExpenses) => {
       plugins: {
         legend: {
           position: 'bottom',
-          labels: { color: 'var(--text-secondary)', font: { family: 'Inter', size: 10 } }
+          labels: { color: resolveColor('var(--text-secondary)'), font: { family: 'Inter', size: 10 } }
         }
       },
       cutout: '65%'
@@ -600,8 +609,8 @@ const drawDashboardCharts = (currentMonthExpenses) => {
         datasets: [{
           label: 'Daily Spending',
           data: trendData,
-          borderColor: 'var(--primary)',
-          backgroundColor: 'var(--primary-soft)',
+          borderColor: resolveColor('var(--primary)'),
+          backgroundColor: resolveColor('var(--primary-soft)'),
           borderWidth: 2,
           fill: true,
           tension: 0.35,
@@ -618,11 +627,11 @@ const drawDashboardCharts = (currentMonthExpenses) => {
         scales: {
           x: {
             grid: { display: false },
-            ticks: { color: 'var(--text-muted)', font: { family: 'Inter', size: 10 } }
+            ticks: { color: resolveColor('var(--text-muted)'), font: { family: 'Inter', size: 10 } }
           },
           y: {
-            grid: { color: 'var(--border-color)' },
-            ticks: { color: 'var(--text-muted)', font: { family: 'Inter', size: 10 } }
+            grid: { color: resolveColor('var(--border-color)') },
+            ticks: { color: resolveColor('var(--text-muted)'), font: { family: 'Inter', size: 10 } }
           }
         }
       }
@@ -946,7 +955,7 @@ const generateReportData = async () => {
   if (repLabels.length === 0) {
     repLabels.push('No data');
     repData.push(1);
-    repColors.push('var(--border-color)');
+    repColors.push(resolveColor('var(--border-color)'));
   }
 
   reportChartInstance = new Chart(reportCtx, {
@@ -965,7 +974,7 @@ const generateReportData = async () => {
       plugins: {
         legend: {
           position: 'right',
-          labels: { color: 'var(--text-secondary)', font: { family: 'Inter', size: 11 } }
+          labels: { color: resolveColor('var(--text-secondary)'), font: { family: 'Inter', size: 11 } }
         }
       }
     }
@@ -1288,6 +1297,7 @@ DOM.darkModeToggle.addEventListener('change', (e) => {
     document.body.classList.add('light-theme');
     document.body.classList.remove('dark-theme');
   }
+  refreshActiveView();
 });
 
 // ================= EXPENSE CRUD MODAL OPERATIONS =================
